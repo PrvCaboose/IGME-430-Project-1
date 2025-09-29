@@ -1,0 +1,27 @@
+{
+  "name": "igme-430-project-1",
+  "version": "1.0.0",
+  "description": "Web API created for a specific dataset",
+  "homepage": "https://github.com/PrvCaboose/IGME-430-Project-1#readme",
+  "bugs": {
+    "url": "https://github.com/PrvCaboose/IGME-430-Project-1/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PrvCaboose/IGME-430-Project-1.git"
+  },
+  "license": "ISC",
+  "author": "John Huggins",
+  "type": "commonjs",
+  "main": "./src/server.js",
+  "scripts": {
+    "start": "node ./src/server.js",
+    "pretest": "eslint ./src --fix",
+    "test": "echo \"Tests Complete\""
+  },
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.32.0"
+  }
+}
