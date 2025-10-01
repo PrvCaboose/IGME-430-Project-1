@@ -1,16 +1,19 @@
 const http = require('http');
 const query = require('querystring');
 const htmlHandler = require('./htmlResponses');
-const jsonHandler = require('./jsonResponses');
+const apiHandler = require('./apiResponses');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 const urlStruct = {
   '/': htmlHandler.getIndex,
   '/style.css': htmlHandler.getStyles,
-  '/getUsers': jsonHandler.getUsers,
-  '/notReal': jsonHandler.notReal,
-  '/addUser': jsonHandler.addUser,
+  '/getBooks': apiHandler.getBooks,
+  '/getGenres': apiHandler.getGenres,
+  '/getLanguages': apiHandler.getLanguages,
+  '/getBookList': apiHandler.addBookToList,
+  '/addBookToList': apiHandler.addBookToList,
+  '/editBookOnList': apiHandler.editBookOnList
 };
 
 const handlePost = (request, response, parsedURL) => {
