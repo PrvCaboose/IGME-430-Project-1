@@ -8,12 +8,12 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 const urlStruct = {
   '/': htmlHandler.getIndex,
   '/style.css': htmlHandler.getStyles,
-  '/getBooks': apiHandler.getBooks,
+  '/getAllBooks': apiHandler.getAllBooks,
   '/getGenres': apiHandler.getGenres,
-  '/getLanguages': apiHandler.getLanguages,
-  '/getBookList': apiHandler.addBookToList,
-  '/addBookToList': apiHandler.addBookToList,
-  '/editBookOnList': apiHandler.editBookOnList
+  '/getBooksByTitle': apiHandler.getBooksByTitle,
+  '/getBooksByAuthor': apiHandler.getBooksByAuthor,
+  '/addBook': apiHandler.addBook,
+  '/markAsFavorite': apiHandler.markAsFavorite
 };
 
 const handlePost = (request, response, parsedURL) => {
@@ -45,11 +45,13 @@ const handlePost = (request, response, parsedURL) => {
 
 const handleGetHead = (request, response, parsedURL) => {
   console.log(parsedURL.pathname);
+
+  //request.searchParams = parsedURL.searchParams;
   if (urlStruct[parsedURL.pathname]) {
     return urlStruct[parsedURL.pathname](request, response);
   }
   // Fallback if url fails
-  return urlStruct['/notReal'](request, response);
+  //return urlStruct['/notReal'](request, response);
 };
 
 const onRequest = (request, response) => {

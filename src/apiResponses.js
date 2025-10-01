@@ -1,7 +1,22 @@
 const books = require('./books.json');
-const userBookList = [];
+const favoriteBooks = [];
+
+const sendResponse = (request, response, statusCode, content) => {
+  const jsonBody = JSON.stringify(content);
+  response.writeHead(statusCode, {
+    'Content-Type': 'application/json',
+    'Content-Length': Buffer.byteLength(jsonBody, 'utf8'),
+  });
+
+  if (request.method !== 'HEAD' && statusCode !== 204) {
+    response.write(jsonBody);
+  }
+
+  response.end();
+};
 
 const getGenres = (request, response) => {
+    console.log('getting genres');
     let genres = [];
 
     // Get a unique list of genres
@@ -12,41 +27,43 @@ const getGenres = (request, response) => {
         
     });
     
-    const resBody = JSON.stringify(genres);
-
-    response.writeHead(200, {
-        'Content-Type': 'applicaiton/json',
-        'Content-Length': Buffer.byteLength(resBody)
-    });
-    response.write(resBody);
-    response.end();
+    sendResponse(request, response, 200, genres);
 }
 
-const getBooks = (request, response) => {
+const getBookByGenre = (request, response) => {
+
+}
+
+const getAllBooks = (request, response) => {
     
 }
 
-const getLanguages = (request, response) => {
+const getBooksByAuthor = (request, response) => {
 
 }
 
-const getBookList = (request, response) => {
+const getBooksByTitle = (request, response) => {
 
 }
 
-const addBookToList = (request, response) => {
+const getFavoriteBooks = (request, response) => {
+    sendResponse(request, response, 200, favoriteBooks);
+}
+
+const markAsFavorite = (request, response) => {
 
 }
 
-const editBookOnList = (request, response) => {
+const addBook = (request, response) => {
 
 }
 
 module.exports = {
     getGenres,
-    getBooks,
-    getLanguages,
-    getBookList,
-    addBookToList,
-    editBookOnList
+    getBookByGenre,
+    getAllBooks,
+    getBooksByAuthor,
+    getBooksByTitle,
+    addBook,
+    markAsFavorite
 }
