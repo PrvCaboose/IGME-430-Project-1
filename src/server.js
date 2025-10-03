@@ -10,6 +10,7 @@ const urlStruct = {
   '/style.css': htmlHandler.getStyles,
   '/getAllBooks': apiHandler.getAllBooks,
   '/getGenres': apiHandler.getGenres,
+  '/getBookByGenre': apiHandler.getBookByGenre,
   '/getBooksByTitle': apiHandler.getBooksByTitle,
   '/getBooksByAuthor': apiHandler.getBooksByAuthor,
   '/addBook': apiHandler.addBook,
@@ -45,6 +46,7 @@ const handlePost = (request, response, parsedURL) => {
 
 const handleGetHead = (request, response, parsedURL) => {
   console.log(parsedURL.pathname);
+  console.log(parsedURL.searchParams);
 
   //request.searchParams = parsedURL.searchParams;
   if (urlStruct[parsedURL.pathname]) {

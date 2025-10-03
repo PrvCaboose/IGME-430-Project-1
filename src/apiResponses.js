@@ -16,7 +16,6 @@ const sendResponse = (request, response, statusCode, content) => {
 };
 
 const getGenres = (request, response) => {
-    console.log('getting genres');
     let genres = [];
 
     // Get a unique list of genres
