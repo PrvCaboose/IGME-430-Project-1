@@ -30,7 +30,15 @@ const getGenres = (request, response) => {
 }
 
 const getBookByGenre = (request, response) => {
-
+  const genreParams = request.searchParams.getAll('genres');
+  console.log(genreParams)
+  
+  const booksToSend = books.filter(book => {
+    if (book.genres){
+      return genreParams.every(g => book.genres.includes(g));
+    }
+  });
+  console.log(booksToSend);
 }
 
 const getAllBooks = (request, response) => {

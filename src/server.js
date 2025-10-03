@@ -45,10 +45,10 @@ const handlePost = (request, response, parsedURL) => {
 };
 
 const handleGetHead = (request, response, parsedURL) => {
-  console.log(parsedURL.pathname);
-  console.log(parsedURL.searchParams);
+  //console.log(parsedURL.pathname);
+  //console.log(parsedURL.searchParams.getAll('genres'));
 
-  //request.searchParams = parsedURL.searchParams;
+  request.searchParams = parsedURL.searchParams;
   if (urlStruct[parsedURL.pathname]) {
     return urlStruct[parsedURL.pathname](request, response);
   }
