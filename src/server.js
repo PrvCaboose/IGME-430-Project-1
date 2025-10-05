@@ -14,7 +14,8 @@ const urlStruct = {
   '/getBooksByTitle': apiHandler.getBooksByTitle,
   '/getBooksByAuthor': apiHandler.getBooksByAuthor,
   '/addBook': apiHandler.addBook,
-  '/markAsFavorite': apiHandler.markAsFavorite
+  '/markAsFavorite': apiHandler.markAsFavorite,
+  '/getFavoriteBooks': apiHandler.getFavoriteBooks,
 };
 
 const handlePost = (request, response, parsedURL) => {
@@ -45,15 +46,15 @@ const handlePost = (request, response, parsedURL) => {
 };
 
 const handleGetHead = (request, response, parsedURL) => {
-  //console.log(parsedURL.pathname);
-  //console.log(parsedURL.searchParams.getAll('genres'));
+  // console.log(parsedURL.pathname);
+  // console.log(parsedURL.searchParams.getAll('genres'));
 
   request.searchParams = parsedURL.searchParams;
   if (urlStruct[parsedURL.pathname]) {
     return urlStruct[parsedURL.pathname](request, response);
   }
   // Fallback if url fails
-  //return urlStruct['/notReal'](request, response);
+  return urlStruct['/notReal'](request, response);
 };
 
 const onRequest = (request, response) => {
