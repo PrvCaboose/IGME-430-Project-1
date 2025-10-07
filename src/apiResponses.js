@@ -29,7 +29,7 @@ const getGenres = (request, response) => {
 };
 
 const getBookByGenre = (request, response) => {
-  if (request.searchParams.genres) {
+  if (request.searchParams.getAll('genres')) {
     // Filter books by genre
     const genreParams = request.searchParams.getAll('genres');
 
@@ -52,12 +52,9 @@ const getAllBooks = (request, response) => {
 };
 
 const getBooksByAuthor = (request, response) => {
-  if (request.searchParams.author) {
+  if (request.searchParams.getAll('author')) {
     // Filter books by author
-    const authorParams = request.searchParams.author;
-
-    const booksToSend = books.filter((book) => book.author === authorParams);
-    console.log(booksToSend);
+    const booksToSend = books.filter((book) => book.author === request.searchParams.get('author'));
 
     sendResponse(request, response, 200, booksToSend);
   } else { // Missing filter params
@@ -66,9 +63,9 @@ const getBooksByAuthor = (request, response) => {
 };
 
 const getBooksByTitle = (request, response) => {
-  if (request.searchParams.title) {
+  if (request.searchParams.get('title')) {
     // Filter by title
-    const booksToSend = books.filter((book) => book.title === request.searchParams.title);
+    const booksToSend = books.filter((book) => book.title === request.searchParams.get('title'));
 
     sendResponse(request, response, 200, booksToSend);
   } else {
@@ -81,10 +78,23 @@ const getFavoriteBooks = (request, response) => {
 };
 
 const markAsFavorite = (request, response) => {
-  const { book } = request.body;
+  const author = request.searchParams.get('author');
+  const title = request.searchParams.get('title');
 
+  console.log(author + ' ' + title);
+
+  if (!author || !title) {
+    return sendResponse(request, response, 400, {'message':'Error: Missing coresponding author and title'});
+  }
+
+  const book = books.filter(book => book.author === author && book.title === title);
+  console.log(book);
+  if (book.length == 0) {
+    return sendResponse(request, response, 400, {'message':`Error: ${title} by ${author} does not exist`});
+  }
+  //console.log(book);
   favoriteBooks.push(book);
-  sendResponse(request, response, 204, {});
+  return sendResponse(request, response, 204, {});
 };
 
 const addBook = (request, response) => {

@@ -46,15 +46,15 @@ const handlePost = (request, response, parsedURL) => {
 };
 
 const handleGetHead = (request, response, parsedURL) => {
-  // console.log(parsedURL.pathname);
-  // console.log(parsedURL.searchParams.getAll('genres'));
+  console.log(parsedURL.pathname);
+  //console.log(parsedURL.searchParams.getAll('author'));
 
   request.searchParams = parsedURL.searchParams;
   if (urlStruct[parsedURL.pathname]) {
     return urlStruct[parsedURL.pathname](request, response);
   }
   // Fallback if url fails
-  return urlStruct['/notReal'](request, response);
+  //return urlStruct['/notReal'](request, response);
 };
 
 const onRequest = (request, response) => {

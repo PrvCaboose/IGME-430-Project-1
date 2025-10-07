@@ -117,7 +117,7 @@
       genreContainer.appendChild(newBtn);
     }
 
-    const searchByGenre = (genreContainer, genreForm) => {
+    const searchByGenre = async (genreContainer, genreForm) => {
       const method = document.getElementById('genreMethod').value;
       const url = genreForm.getAttribute('action');
       
@@ -128,13 +128,16 @@
         genreParams.append('genres',genre);
       });
 
-      const response = fetch(url + '?'+genreParams.toString(), {
+      const response = await fetch(url + '?'+genreParams.toString(), {
         method: method,
         headers: {
           'Content-Type':'application/json',
           'accept':'application/json'
         }
       });
+
+      const jsonRes = await response.json();
+      console.log(jsonRes);
     }
 
     const searchByAuthor = (authorForm) => {
