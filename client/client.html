@@ -196,22 +196,46 @@
 <body>
   <section id="top">
     <h3>Book App</h3>
-    <form id="authorForm" action="/getBooksByAuthor" method="get">
-      <label for="author">Search By Author: </label>
-      <input id="authorField" type="text" name="author" />
-      <button type="submit">Search</button>
-    </form>
-    <br>
+    <div>
+      <form id="authorForm" action="/getBooksByAuthor" method="get">
+        <label for="author">Search By Author: </label>
+        <input id="authorField" type="text" name="author" />
+        <button type="submit">Search</button>
+      </form>
+      <hr>
+    </div>
 
-    <form id="titleForm" action="/getBooksByTitle" method="get">
-      <label for="title">Search By Title: </label>
-      <input id="titleField" type="text" name="title" />
-      <button type="submit">Search</button>
-    </form>
-    <br>
+    <div>
+      <form id="titleForm" action="/getBooksByTitle" method="get">
+        <label for="title">Search By Title: </label>
+        <input id="titleField" type="text" name="title" />
+        <button type="submit">Search</button>
+      </form>
+      <hr>
+    </div>
+    <div>
+      <form id="favoriteForm" action="/markAsFavorite" method="post">
+        <label for="title">Title: </label>
+        <input id="favTitle" type="text" name="title" /><br>
+        <label for="author">Author: </label>
+        <input id="favAuthor" type="text" name="author" /><br>
+        <button type="submit">Add Favorite Book</button>
+      </form>
+      <hr>
+    </div>
 
+    <div>
+      <form id="addBookForm" action="/markAsFavorite" method="post">
+        <label for="title">Title: </label>
+        <input id="addTitle" type="text" name="title" /><br>
+        <label for="author">Author: </label>
+        <input id="addAuthor" type="text" name="author" /><br>
+        <button type="submit">Add New Book</button>
+      </form>
+      <hr>
+    </div>
+    
     <section id="genre-section">
-
       <div id="filterByGenre">
         <form id="genreForm" action="/getBookByGenre">
           <label for="genres">Filter by Genres:</label>

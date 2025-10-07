@@ -77,9 +77,10 @@ const getFavoriteBooks = (request, response) => {
   sendResponse(request, response, 200, favoriteBooks);
 };
 
+
+// POST ENDPOINTS
 const markAsFavorite = (request, response) => {
-  const author = request.searchParams.get('author');
-  const title = request.searchParams.get('title');
+  const {author, title} = request.body;
 
   console.log(author + ' ' + title);
 
