@@ -16,7 +16,9 @@
           if (response.body) {
             data = await response.json();
             console.log(data);
-            container.innerHTML += `<br></br>${JSON.stringify(data.users)}`;
+            data.forEach(book => {
+              container.innerHTML += `<br></br>${JSON.stringify(book)}`;
+            })
           }
           break;
         case 201:
@@ -136,16 +138,45 @@
         }
       });
 
-      const jsonRes = await response.json();
-      console.log(jsonRes);
+      displayMessage(response);
+      //const jsonRes = await response.json();
+      //console.log(jsonRes);
     }
 
-    const searchByAuthor = (authorForm) => {
+    const searchByAuthor = async (authorForm) => {
+      const method = document.getElementById('authorMethod').value;
+      const url = authorForm.getAttribute('action');
 
+      let authorParams = new URLSearchParams();
+      authorParams.append('author', authorForm[0].value);
+      
+      const response = await fetch(url + '?'+authorParams.toString(), {
+        method: method,
+        headers: {
+          'Content-Type':'application/json',
+          'accept':'application/json'
+        }
+      });
+
+      displayMessage(response);
     }
 
-    const searchByTitle = (titleForm) => {
+    const searchByTitle = async (titleForm) => {
+      const method = document.getElementById('titleMethod').value;
+      const url = titleForm.getAttribute('action');
 
+      let titleParams = new URLSearchParams();
+      titleParams.append('title', titleForm[0].value);
+
+      const response = await fetch(url + '?'+titleParams.toString(), {
+        method: method,
+        headers: {
+          'Content-Type':'application/json',
+          'accept':'application/json'
+        }
+      });
+
+      displayMessage(response);
     }
 
     const init = async () => {
@@ -200,6 +231,10 @@
       <form id="authorForm" action="/getBooksByAuthor" method="get">
         <label for="author">Search By Author: </label>
         <input id="authorField" type="text" name="author" />
+        <select name="Method" id="authorMethod">
+          <option value="get">get</option>
+          <option value="head">head</option>
+        </select>
         <button type="submit">Search</button>
       </form>
       <hr>
@@ -209,6 +244,10 @@
       <form id="titleForm" action="/getBooksByTitle" method="get">
         <label for="title">Search By Title: </label>
         <input id="titleField" type="text" name="title" />
+        <select name="Method" id="titleMethod">
+          <option value="get">get</option>
+          <option value="head">head</option>
+        </select>
         <button type="submit">Search</button>
       </form>
       <hr>
