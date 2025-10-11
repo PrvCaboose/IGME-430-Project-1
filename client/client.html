@@ -6,6 +6,7 @@
   
   <script>
     const selectedGenres = [];
+    const addedGenres = [];
 
     const displayMessage = async (response) => {
       const container = document.getElementById('content');
@@ -30,9 +31,13 @@
           container.innerHTML = `Updated (No Content)`;
           break;
         case 400:
-          data = await response.json();
-          console.log(data); 
-          container.innerHTML = `Bad Request<br></br>Message: ${data.message}`;
+          container.innerHTML = 'Bad Request';
+          if (response.body) {
+            data = await response.json();
+            console.log(data); 
+            container.innerHTML += `<br></br>Message: ${data.message}`;
+          } 
+          
           break;
         case 404:
           container.innerHTML = `Not Found`;
@@ -45,43 +50,6 @@
       }
 
       
-    }
-
-    const sendPost = async (nameForm) => {
-      console.log(nameForm)
-      const url = nameForm.getAttribute('action');
-      const method = nameForm.getAttribute('method');
-
-      const name = nameForm.querySelector('#nameField');
-      const age = nameForm.querySelector('#ageField');
-
-      const formData = `name=${name.value}&age=${age.value}`;
-
-      const response = await fetch(url, {
-        'method': method,
-        'headers': {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'application/json',
-        },
-        'body': formData
-      });
-
-      displayMessage(response);
-    }
-
-    const sendGetHead = async (userForm) => {
-      const url = userForm.querySelector('#urlField').value;
-      const method = userForm.querySelector('#methodSelect').value;
-
-      const response = await fetch(url, {
-        'method': method,
-        'headers': {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        }
-      });
-
-      displayMessage(response);
     }
 
     // Get a list on all the genres to search by
@@ -105,6 +73,11 @@
       e.target.parentElement.removeChild(e.target);
     }
 
+    const removeNewGenre = (e) => {
+      addedGenres.splice(addedGenres.indexOf(e.target.innerHTML),1);
+      e.target.parentElement.removeChild(e.target);
+    }
+    
     // Add Genre to the list to filter by
     const addGenre = () => {
       if (!selectedGenres.indexOf(genreSelect.value))
@@ -119,6 +92,19 @@
       genreContainer.appendChild(newBtn);
     }
 
+    const addNewGenre = () => {
+      const genreValue = document.getElementById('addNewGenres').value;
+      if (!addedGenres.indexOf(genreValue))
+        return;
+      addedGenres.push(genreValue);
+      const newBtn = document.createElement('button');
+      newBtn.innerHTML = genreValue;
+      newBtn.onclick = removeNewGenre;
+      newBtn.type = 'button';
+
+      document.getElementById('newGenres').appendChild(newBtn);
+    }
+    
     const searchByGenre = async (genreContainer, genreForm) => {
       const method = document.getElementById('genreMethod').value;
       const url = genreForm.getAttribute('action');
@@ -179,16 +165,46 @@
       displayMessage(response);
     }
 
+    const addNewFavoriteBook = async (favoriteForm) => {
+      const url = favoriteForm.getAttribute('action');
+
+      console.log(favoriteForm);
+
+      const bodyParams = new URLSearchParams();
+      bodyParams.append('title', favoriteForm[0].value);
+      bodyParams.append('author', favoriteForm[1].value);
+
+      const response = await fetch(url, {
+        method: 'post',
+        headers: {
+          'Content-Type':'application/w-xxx-form-urlencoded',
+          'accept':'application/json'
+        },
+        body: bodyParams.toString()
+      })
+
+      displayMessage(response);
+    }
+
+    const addNewBook = (addBookForm) => {
+
+
+    }
+
     const init = async () => {
       // Get forms
       const authorForm = document.getElementById('authorForm');
       const genreForm = document.getElementById('genreForm');
       const titleForm = document.getElementById('titleForm');
+      const favoriteForm = document.getElementById('favoriteForm');
+      const addBookForm = document.getElementById('addBookForm');
 
       // Get genre specific DOM elements
       const genreContainer = document.getElementById('genreContainer');
       const addGenreBtn = document.getElementById('addGenre');
+      const newGenreBtn = document.getElementById('newGenreBtn');
       addGenreBtn.onclick = addGenre;
+      newGenreBtn.onclick = addNewGenre;
 
       // Generate genres
       let genreHTML = document.querySelector('#genreSelect');
@@ -217,9 +233,23 @@
         return false;
       }
 
+      const addFavoriteBook = (e) => {
+        e.preventDefault();
+        addNewFavoriteBook(favoriteForm);
+        return false;
+      }
+
+      const addBook = (e) => {
+        e.preventDefault();
+        addNewBook(addBookForm);
+        return false;
+      }
+
       genreForm.addEventListener('submit', getBookByGenre);
       authorForm.addEventListener('submit', getBookByAuthor);
       titleForm.addEventListener('submit', getBookByTitle);
+      favoriteForm.addEventListener('submit', addFavoriteBook);
+      addBookForm.addEventListener('submit', addBook);
     }
     window.onload = init;
   </script>
@@ -252,6 +282,22 @@
       </form>
       <hr>
     </div>
+    <section id="genre-section">
+      <div id="filterByGenre">
+        <form id="genreForm" action="/getBookByGenre">
+          <label for="genres">Filter by Genres:</label>
+          <select name="genres" id="genreSelect">
+          </select>
+          <select name="Method" id="genreMethod">
+            <option value="get">get</option>
+            <option value="head">head</option>
+          </select>
+          <input type="button" value="Add Genre" id="addGenre">
+          <div id="genreContainer">Filter</div>
+          <button type="submit">Search</button>
+        </form>
+      </div>
+    </section>
     <div>
       <form id="favoriteForm" action="/markAsFavorite" method="post">
         <label for="title">Title: </label>
@@ -269,27 +315,29 @@
         <input id="addTitle" type="text" name="title" /><br>
         <label for="author">Author: </label>
         <input id="addAuthor" type="text" name="author" /><br>
+        <label for="country">Country: </label>
+        <input id="addCountry" type="text" name="country" /><br>
+        <label for="language">Language: </label>
+        <input id="addLanguage" type="text" name="language" /><br>
+        <label for="year">Year: </label>
+        <input id="addYear" type="number" name="year" /><br>
+        <label for="pages">Pages: </label>
+        <input id="addPages" type="number" name="pages" /><br>
+        <label for="genres">Genres: </label>
+        <input id="addNewGenres" type="text" name="genres" />
+        <button type="button" id="newGenreBtn">Add Genre</button><br>
+        <div id="newGenres"></div>
         <button type="submit">Add New Book</button>
       </form>
       <hr>
     </div>
+
+    <div>
+      <button id="getFavoriteBooks" type="button">Get Favorite Books</button>
+      <hr>
+    </div>
     
-    <section id="genre-section">
-      <div id="filterByGenre">
-        <form id="genreForm" action="/getBookByGenre">
-          <label for="genres">Filter by Genres:</label>
-          <select name="genres" id="genreSelect">
-          </select>
-          <select name="Method" id="genreMethod">
-            <option value="get">get</option>
-            <option value="head">head</option>
-          </select>
-          <input type="button" value="Add Genre" id="addGenre">
-          <div id="genreContainer">Filter</div>
-          <button type="submit">Search</button>
-        </form>
-      </div>
-    </section>
+
   </section>
   <section id="content">
   </section>

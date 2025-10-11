@@ -2,6 +2,7 @@ const fs = require('fs');
 
 const index = fs.readFileSync(`${__dirname}/../client/client.html`);
 const styles = fs.readFileSync(`${__dirname}/../client/style.css`);
+const notRealHtml = fs.readFileSync(`${__dirname}/../client/notReal.html`);
 
 const getIndex = (request, response) => {
   response.writeHead(200, { 'Content-Type': 'text/html' });
@@ -15,7 +16,14 @@ const getStyles = (request, response) => {
   response.end();
 };
 
+const notReal = (request, response) => {
+  response.writeHead(404, {'Content-Type':'text/html'});
+  response.write(notRealHtml);
+  response.end();
+}
+
 module.exports = {
   getIndex,
   getStyles,
+  notReal
 };

@@ -52,9 +52,13 @@ const getAllBooks = (request, response) => {
 };
 
 const getBooksByAuthor = (request, response) => {
-  if (request.searchParams.getAll('author')) {
+  if (request.searchParams.get('author')) {
     // Filter books by author
     const booksToSend = books.filter((book) => book.author === request.searchParams.get('author'));
+    
+    if (booksToSend.length == 0) {
+      return sendResponse(request, response, 400, {message: `Error: No books found by author '${request.searchParams.get('author')}'`});
+    }
 
     sendResponse(request, response, 200, booksToSend);
   } else { // Missing filter params
@@ -66,6 +70,10 @@ const getBooksByTitle = (request, response) => {
   if (request.searchParams.get('title')) {
     // Filter by title
     const booksToSend = books.filter((book) => book.title === request.searchParams.get('title'));
+
+    if (booksToSend.length == 0) {
+      return sendResponse(request, response, 400, {message: `Error: No books found with title '${request.searchParams.get('title')}'`});
+    }
 
     sendResponse(request, response, 200, booksToSend);
   } else {
@@ -104,6 +112,7 @@ const addBook = (request, response) => {
   books.push(book);
   sendResponse(request, response, 201, { message: 'Book successfully added' });
 };
+
 
 module.exports = {
   getGenres,

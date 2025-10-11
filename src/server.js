@@ -16,6 +16,7 @@ const urlStruct = {
   '/addBook': apiHandler.addBook,
   '/markAsFavorite': apiHandler.markAsFavorite,
   '/getFavoriteBooks': apiHandler.getFavoriteBooks,
+  '/notReal': htmlHandler.notReal
 };
 
 const handlePost = (request, response, parsedURL) => {
@@ -54,7 +55,7 @@ const handleGetHead = (request, response, parsedURL) => {
     return urlStruct[parsedURL.pathname](request, response);
   }
   // Fallback if url fails
-  //return urlStruct['/notReal'](request, response);
+  return urlStruct['/notReal'](request, response);
 };
 
 const onRequest = (request, response) => {
