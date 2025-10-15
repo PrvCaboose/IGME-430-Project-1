@@ -7,16 +7,17 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 const urlStruct = {
   '/': htmlHandler.getIndex,
+  '/docs': htmlHandler.getDocs,
   '/style.css': htmlHandler.getStyles,
   '/getAllBooks': apiHandler.getAllBooks,
   '/getGenres': apiHandler.getGenres,
-  '/getBookByGenre': apiHandler.getBookByGenre,
+  '/getBooksByGenre': apiHandler.getBooksByGenre,
   '/getBooksByTitle': apiHandler.getBooksByTitle,
   '/getBooksByAuthor': apiHandler.getBooksByAuthor,
   '/addBook': apiHandler.addBook,
   '/markAsFavorite': apiHandler.markAsFavorite,
   '/getFavoriteBooks': apiHandler.getFavoriteBooks,
-  '/notReal': htmlHandler.notReal
+  '/notReal': htmlHandler.notReal,
 };
 
 const handlePost = (request, response, parsedURL) => {
@@ -48,7 +49,6 @@ const handlePost = (request, response, parsedURL) => {
 
 const handleGetHead = (request, response, parsedURL) => {
   console.log(parsedURL.pathname);
-  //console.log(parsedURL.searchParams.getAll('author'));
 
   request.searchParams = parsedURL.searchParams;
   if (urlStruct[parsedURL.pathname]) {
@@ -60,13 +60,17 @@ const handleGetHead = (request, response, parsedURL) => {
 
 const onRequest = (request, response) => {
   // Parse URL info
-  const protocol = request.connection.encryted ? 'https' : 'http';
-  const parsedURL = new URL(request.url, `${protocol}://${request.headers.host}`);
+  try {
+    const protocol = request.connection.encryted ? 'https' : 'http';
+    const parsedURL = new URL(request.url, `${protocol}://${request.headers.host}`);
 
-  if (request.method === 'POST') {
-    handlePost(request, response, parsedURL);
-  } else {
-    handleGetHead(request, response, parsedURL);
+    if (request.method === 'POST') {
+      handlePost(request, response, parsedURL);
+    } else {
+      handleGetHead(request, response, parsedURL);
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
 

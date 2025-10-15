@@ -8,18 +8,41 @@
     const selectedGenres = [];
     const addedGenres = [];
 
+    // displays response from server
     const displayMessage = async (response) => {
-      const container = document.getElementById('content');
+      const container = document.getElementById('message-content');
+      const bookContainer = document.getElementById('book-content');
+      bookContainer.innerHTML = ''; // Clear books after a search
       let data;
+
+      // handles 200, 201, 204, and 400 responses
+      // 404 is handled by the server
       switch (response.status) {
         case 200:
           container.innerHTML = `Success`;
           if (response.body) {
             data = await response.json();
             console.log(data);
-            data.forEach(book => {
-              container.innerHTML += `<br></br>${JSON.stringify(book)}`;
-            })
+            // if data is a book, create book html element
+            if (data[0] && data[0].title) {
+              data.forEach(book => {
+                let bookDiv = `<div class="book-container">`;
+                bookDiv += `<p class="book-item">Author: ${book.author}</p>`;
+                bookDiv += `<p class="book-item">Title: ${book.title}</p>`;
+                bookDiv += `<p class="book-item">Country: ${book.country}</p>`;
+                bookDiv += `<p class="book-item">Language: ${book.language}</p>`;
+                bookDiv += `<p class="book-item">Pages: ${book.pages}</p>`;
+                bookDiv += `<p class="book-item">Year: ${book.year}</p>`;
+                bookDiv += `<a class="book-item" href="${book.link}" target="_blank">Wikipedia Link</a>`;
+                if (book.genres)
+                  bookDiv += `<p class="book-item">Genres: ${book.genres}</p>`;
+                bookDiv += '</div>';
+                bookContainer.innerHTML += bookDiv;
+              })
+            } else {
+              bookContainer.innerHTML = data;
+            }
+            
           }
           break;
         case 201:
@@ -39,20 +62,24 @@
           } 
           
           break;
-        case 404:
-          container.innerHTML = `Not Found`;
-          if (response.body) {
-            data = await response.json();
-            console.log(data);
-            container.innerHTML += `<br></br>Message: ${data.message}`;
-          }
-          break;
-      }
+      } 
+    }
 
-      
+    // sends a get or head request given a method, url, and optional params
+    const sendGetHead = async (method, url, params) => {
+      const response = await fetch(url + '?' + params, {
+        method: method,
+        headers: {
+          'Content-Type':'application/json',
+          'accept':'application/json'
+        }
+      });
+
+      displayMessage(response);
     }
 
     // Get a list on all the genres to search by
+    //  Doesn't use sendGetHead as data should be returned on window init
     const getGenres = async (method) => {
       const response = await fetch('/getGenres', {
         method: method,
@@ -61,24 +88,37 @@
           'Accept': 'application/json',
         }
       });
-      let data = await response.json();
 
-      //console.log(data);
+      return response;
+    }
+
+    // Displays genres to user, hooked up to button
+    const refreshGenres = async () => {
+      const method = document.getElementById("genreMethodSelect").value;
+      displayMessage(await getGenres(method));
+    }
+
+    // Grabs the genres on window init to use for user filtering
+    const initGenres = async () => {
+      const response = await getGenres('get');
+      const data = await response.json();
       return data;
     }
 
-    // Remove Genre from the list
+    // Remove Genre from the filter list
     const removeGenre = (e) => {
       selectedGenres.splice(selectedGenres.indexOf(e.target.innerHTML),1);
       e.target.parentElement.removeChild(e.target);
     }
 
+    // Removes Genre from the add book list
     const removeNewGenre = (e) => {
       addedGenres.splice(addedGenres.indexOf(e.target.innerHTML),1);
       e.target.parentElement.removeChild(e.target);
     }
     
-    // Add Genre to the list to filter by
+    // Creats a button element which shows current selected genres to filter by
+    // button on click removes the genre and the button
     const addGenre = () => {
       if (!selectedGenres.indexOf(genreSelect.value))
         return;
@@ -91,7 +131,8 @@
 
       genreContainer.appendChild(newBtn);
     }
-
+    // Creats a button element which shows current selected genres to add to a new book
+    // button on click removes the genre and the button
     const addNewGenre = () => {
       const genreValue = document.getElementById('addNewGenres').value;
       if (!addedGenres.indexOf(genreValue))
@@ -105,6 +146,7 @@
       document.getElementById('newGenres').appendChild(newBtn);
     }
     
+    // Gets list of genres to compile into search params
     const searchByGenre = async (genreContainer, genreForm) => {
       const method = document.getElementById('genreMethod').value;
       const url = genreForm.getAttribute('action');
@@ -116,60 +158,48 @@
         genreParams.append('genres',genre);
       });
 
-      const response = await fetch(url + '?'+genreParams.toString(), {
-        method: method,
-        headers: {
-          'Content-Type':'application/json',
-          'accept':'application/json'
-        }
-      });
-
-      displayMessage(response);
-      //const jsonRes = await response.json();
-      //console.log(jsonRes);
+      sendGetHead(method, url, genreParams.toString());
     }
-
+    // Gets author name into search params and sends a request
     const searchByAuthor = async (authorForm) => {
       const method = document.getElementById('authorMethod').value;
       const url = authorForm.getAttribute('action');
-
+      // form query params
       let authorParams = new URLSearchParams();
       authorParams.append('author', authorForm[0].value);
       
-      const response = await fetch(url + '?'+authorParams.toString(), {
-        method: method,
-        headers: {
-          'Content-Type':'application/json',
-          'accept':'application/json'
-        }
-      });
-
-      displayMessage(response);
+      sendGetHead(method, url, authorParams.toString());
     }
-
+    // Gets title name into search params and sends a request
     const searchByTitle = async (titleForm) => {
       const method = document.getElementById('titleMethod').value;
       const url = titleForm.getAttribute('action');
-
+      // form query params
       let titleParams = new URLSearchParams();
       titleParams.append('title', titleForm[0].value);
 
-      const response = await fetch(url + '?'+titleParams.toString(), {
-        method: method,
-        headers: {
-          'Content-Type':'application/json',
-          'accept':'application/json'
-        }
-      });
-
-      displayMessage(response);
+      sendGetHead(method, url, titleParams.toString());
     }
 
+    // get favorite books
+    const getFavoriteBooks = async () => {
+      const method = document.getElementById('favoriteMethod').value;
+
+      sendGetHead(method, '/getFavoriteBooks', '')
+    }
+
+    // gets all books
+    const getAllBooks = async () => {
+      const method = document.getElementById('allBooksMethod').value;
+
+      sendGetHead(method, '/getAllBooks', '');
+    }
+
+    // gets title and author form data and sends a request to server for validation
     const addNewFavoriteBook = async (favoriteForm) => {
       const url = favoriteForm.getAttribute('action');
 
-      console.log(favoriteForm);
-
+      // create filter params
       const bodyParams = new URLSearchParams();
       bodyParams.append('title', favoriteForm[0].value);
       bodyParams.append('author', favoriteForm[1].value);
@@ -186,9 +216,47 @@
       displayMessage(response);
     }
 
-    const addNewBook = (addBookForm) => {
+    
+    // Adds a new book to the book list
+    const addNewBook = async (addBookForm) => {
+      const url = addBookForm.getAttribute('action');
 
+      // book info
+      const title = document.getElementById('addTitle').value;
+      const author = document.getElementById('addAuthor').value;
+      const country = document.getElementById('addCountry').value;
+      const language = document.getElementById('addLanguage').value;
+      const year = document.getElementById('addYear').value;
+      const pages = document.getElementById('addPages').value;
+      const link = document.getElementById('addLink').value;
 
+      // Compile book info into one json object
+      const body = {
+        book: {
+          author: author || 'unknown',
+          country: country || 'unknown',
+          language: language || 'unknown',
+          link:link || 'https://en.wikipedia.org',
+          pages: pages || 'unknown',
+          title: title, // required
+          year: year || 'unknown',
+        }
+      }
+      // Add any genres if they exist
+      if (addedGenres.length > 0)
+        body.book.genres = addedGenres;
+
+      // send request
+      const response = await fetch(url, {
+        method: 'post',
+        headers: {
+          'Content-Type':'application/json',
+          'accept':'application/json'
+        },
+        body: JSON.stringify(body)
+      })
+
+      displayMessage(response);
     }
 
     const init = async () => {
@@ -199,22 +267,32 @@
       const favoriteForm = document.getElementById('favoriteForm');
       const addBookForm = document.getElementById('addBookForm');
 
-      // Get genre specific DOM elements
+      // Get button and container DOM elements
       const genreContainer = document.getElementById('genreContainer');
       const addGenreBtn = document.getElementById('addGenre');
       const newGenreBtn = document.getElementById('newGenreBtn');
+      const refreshGenresBtn = document.getElementById('refreshGenres');
+      const getFavoriteBooksBtn = document.getElementById('getFavoriteBooks');
+      const getAllBooksBtn = document.getElementById('getAllBooks');
+
+      // hookup onclick events for basic buttons
+      getAllBooksBtn.onclick = getAllBooks;
+      refreshGenresBtn.onclick = refreshGenres;
       addGenreBtn.onclick = addGenre;
       newGenreBtn.onclick = addNewGenre;
+      getFavoriteBooksBtn.onclick = getFavoriteBooks;
 
       // Generate genres
       let genreHTML = document.querySelector('#genreSelect');
 
-      const genres = await getGenres('get');
-
+      // grab initial set of genres
+      const genres = await initGenres();
+      // foreach genre create an option to choose to filter
       genres.forEach(genre => {
         genreHTML.innerHTML += `<option value="${genre}">${genre}</option>`;
       });
 
+      // Form handlers
       const getBookByAuthor = (e) => {
         e.preventDefault();
         searchByAuthor(authorForm);
@@ -244,7 +322,7 @@
         addNewBook(addBookForm);
         return false;
       }
-
+      // form submit events
       genreForm.addEventListener('submit', getBookByGenre);
       authorForm.addEventListener('submit', getBookByAuthor);
       titleForm.addEventListener('submit', getBookByTitle);
@@ -257,6 +335,7 @@
 <body>
   <section id="top">
     <h3>Book App</h3>
+    <a href="/docs">Documentation</a>
     <div>
       <form id="authorForm" action="/getBooksByAuthor" method="get">
         <label for="author">Search By Author: </label>
@@ -275,7 +354,7 @@
         <label for="title">Search By Title: </label>
         <input id="titleField" type="text" name="title" />
         <select name="Method" id="titleMethod">
-          <option value="get">get</option>
+          <option value="get" >get</option>
           <option value="head">head</option>
         </select>
         <button type="submit">Search</button>
@@ -284,7 +363,7 @@
     </div>
     <section id="genre-section">
       <div id="filterByGenre">
-        <form id="genreForm" action="/getBookByGenre">
+        <form id="genreForm" action="/getBooksByGenre">
           <label for="genres">Filter by Genres:</label>
           <select name="genres" id="genreSelect">
           </select>
@@ -297,6 +376,7 @@
           <button type="submit">Search</button>
         </form>
       </div>
+      <hr>
     </section>
     <div>
       <form id="favoriteForm" action="/markAsFavorite" method="post">
@@ -310,7 +390,16 @@
     </div>
 
     <div>
-      <form id="addBookForm" action="/markAsFavorite" method="post">
+      <button type="button" id="refreshGenres">Get Genres</button>
+      <select name="Method" id="genreMethodSelect">
+        <option value="get">get</option>
+        <option value="head">head</option>
+      </select>
+      <hr>
+    </div>
+
+    <div>
+      <form id="addBookForm" action="/addBook" method="post">
         <label for="title">Title: </label>
         <input id="addTitle" type="text" name="title" /><br>
         <label for="author">Author: </label>
@@ -323,7 +412,9 @@
         <input id="addYear" type="number" name="year" /><br>
         <label for="pages">Pages: </label>
         <input id="addPages" type="number" name="pages" /><br>
-        <label for="genres">Genres: </label>
+        <label for="link">Wikipedia Link: </label>
+        <input id="addLink" type="text" name="link" /><br>
+        <label for="genres">Genres (optional): </label>
         <input id="addNewGenres" type="text" name="genres" />
         <button type="button" id="newGenreBtn">Add Genre</button><br>
         <div id="newGenres"></div>
@@ -334,12 +425,25 @@
 
     <div>
       <button id="getFavoriteBooks" type="button">Get Favorite Books</button>
+      <select name="Method" id="favoriteMethod">
+        <option value="get">get</option>
+        <option value="head">head</option>
+      </select>
       <hr>
     </div>
-    
-
+    <div>
+      <button id="getAllBooks" type="button">Get All Books</button>
+      <select name="Method" id="allBooksMethod">
+        <option value="get">get</option>
+        <option value="head">head</option>
+      </select>
+      <hr>
+    </div>
   </section>
-  <section id="content">
+  <section id="message-content">
+  </section>
+  <section id="book-content">
+
   </section>
 </body>
 </html>

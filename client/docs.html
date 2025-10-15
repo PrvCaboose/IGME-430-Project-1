@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation</title>
+</head>
+<body style="margin: 5px;">
+    <a href="/">app page</a>
+    <h1>API Endpoints</h1>
+    <ul>
+        <li>/getBooksByAuthor</li>
+            <h2>Query Params</h2>
+            <p>author (required) - Author's name to filter by</p>
+            <h2>Returns</h2>
+            <p>A JSON array of books. Format {author:string,country:string,language:string,link:string,pages:number,title:string,year:number,genres?:string[]}</p>
+            <h2>Example</h2>
+            <p>Request: /getBookByAuthor?author=Fyodor+Dostoevsky</p>
+            <p>Response: [    {"author": "Fyodor Dostoevsky",
+                              "country": "Russia",
+                              "language": "Russian",
+                              "link": "https://en.wikipedia.org/wiki/Crime_and_Punishment\n",
+                              "pages": 551,
+                              "title": "Crime and Punishment",
+                              "year": 1866,
+                              "genres": [
+                                "Psychological Fiction",
+                                "Philosophical Fiction"
+                                },...]</p>
+            <p>Request: /getBookByAuthor?author=John+Doe</p>
+            <p>Response: {message:"Error: No books found by author John Doe"}</p>
+        <li>/getBooksByTitle</li>
+            <h2>Query Params</h2>
+            <p>title (required) - Book's title to filter by</p>
+            <h2>Returns</h2>
+            <p>A JSON array of books. Format {author:string,country:string,language:string,link:string,pages:number,title:string,year:number,genres?:string[]}</p>
+            <h2>Example</h2>
+            <p>Request: /getBooksByTitle?tile=Crime+and+Punishment</p>
+            <p>Response: [    {"author": "Fyodor Dostoevsky",
+                              "country": "Russia",
+                              "language": "Russian",
+                              "link": "https://en.wikipedia.org/wiki/Crime_and_Punishment\n",
+                              "pages": 551,
+                              "title": "Crime and Punishment",
+                              "year": 1866,
+                              "genres": [
+                                "Psychological Fiction",
+                                "Philosophical Fiction"
+                                }]p>
+        <li>/getBooksByGenre</li>
+            <h2>Query Params</h2>
+            <p>genres (required) - genres to filter by</p>
+            <h2>Returns</h2>
+            <p>A JSON array of books. Format {author:string,country:string,language:string,link:string,pages:number,title:string,year:number,genres?:string[]}</p>
+            <h2>Example</h2>
+            <p>Request: /getBooksByGenre?genres=Philosophical+Fiction</p>
+            <p>Response: [    {"author": "Fyodor Dostoevsky",
+                              "country": "Russia",
+                              "language": "Russian",
+                              "link": "https://en.wikipedia.org/wiki/Crime_and_Punishment\n",
+                              "pages": 551,
+                              "title": "Crime and Punishment",
+                              "year": 1866,
+                              "genres": [
+                                "Psychological Fiction",
+                                "Philosophical Fiction"
+                                },...]</p>
+            <p>Request: /getBooksByGenre?genres=Philosophy&genres=Satire&genres=Poetry</p>
+            <p>Response: []</p>
+        <li>/markAsFavorite</li>
+            <h2>Query Params</h2>
+            <p>author (required) - author of book to mark as favorite</p>
+            <p>title (required) - title of book to mark as favorite</p>
+            <h2>Returns</h2>
+            <p> a status message indicating success or failure. format {message: string}</p>
+            <h2>Example</h2>
+            <p>Request: /markAsFavorite</p>
+            <p>body: author=Herman+Melville&title=Moby+Dick</p>
+            <p>Response: No Response</p>
+            <p>Request: /markAsFavorite</p>
+            <p>body: author=John+Doe</p>
+            <p>Response: {message: "Error: Missing coresponding author and title"}</p>
+            <p>Request: /markAsFavorite</p>
+            <p>body: author=John+Doe&title=untitledk</p>
+            <p>Response: {message: "Error: untitled by John Doe does not exist"}</p>
+        <li>/getGenres</li>
+            <h2>Query Params</h2>
+            <p> none</p>
+            <h2>Returns</h2>
+            <p> An array of genres as strings. format [string,string,...]</p>
+            <h2>Example</h2>
+            <p>Request: /getGenres</p>
+            <p>Response: ["Historical Fiction", "Poetry", "Mythology",...]</p>
+        <li>/addBook</li>
+            <h2>Query Params</h2>
+            <p>author (required) string - author of book to create</p>
+            <p>title (required) string - title of book to create</p>
+            <p>country (optional) string - country of book to create</p>
+            <p>language (optional) string - language of book to create</p>
+            <p>year (optional) number - year of publication of book to create</p>
+            <p>pages (optional) number - number of pages of book to create</p>
+            <p>link (optional) string - wikipedia link of book to create</p>
+            <p>genres (optional) - genres of book to create</p>
+            <h2>Returns</h2>
+            <p> a status message indicating success or failure. format {message: string}</p>
+            <h2>Example</h2>
+            <p>Request: /addBook</p>
+            <p>body: {book:{author:John Doe, country: USA, language: English, link:wikipedia.com/new_book, pages:100, title: new book, year: 2025, genres: [thriller, mystery]}}</p>
+            <p>Response: {message: "Book successfully added"}</p>
+            <p>Request: /addBook</p>
+            <p>body: {}</p>
+            <p>Response: {message: "Book successfully added"}</p>
+        <li>/getFavoriteBooks</li>
+            <h2>Query Params</h2>
+            <p> none</p>
+            <h2>Returns</h2>
+            <p>A JSON array of books. Format {author:string,country:string,language:string,link:string,pages:number,title:string,year:number,genres?:string[]}</p>
+            <h2>Example</h2>
+            <p>Request: /getFavoriteBooks</p>
+            <p>Response: [  {"author": "Fyodor Dostoevsky",
+                              "country": "Russia",
+                              "language": "Russian",
+                              "link": "https://en.wikipedia.org/wiki/Crime_and_Punishment\n",
+                              "pages": 551,
+                              "title": "Crime and Punishment",
+                              "year": 1866,
+                              "genres": [
+                                "Psychological Fiction",
+                                "Philosophical Fiction"
+                                },...]</p>
+        <li>/getAllBooks</li>
+         <h2>Query Params</h2>
+            <p> none</p>
+            <h2>Returns</h2>
+            <p>A JSON array of books. Format {author:string,country:string,language:string,link:string,pages:number,title:string,year:number,genres?:string[]}</p>
+            <h2>Example</h2>
+            <p>Request: /getFavoriteBooks</p>
+            <p>Response: [  {"author": "Fyodor Dostoevsky",
+                              "country": "Russia",
+                              "language": "Russian",
+                              "link": "https://en.wikipedia.org/wiki/Crime_and_Punishment\n",
+                              "pages": 551,
+                              "title": "Crime and Punishment",
+                              "year": 1866,
+                              "genres": [
+                                "Psychological Fiction",
+                                "Philosophical Fiction"
+                                },...]</p>
+
+    </ul>
+</body>
+</html>

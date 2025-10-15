@@ -14,8 +14,26 @@ html, body {
   font-size: 2em;
 }
 
-#content {
-  margin-top: 100px;
+#message-content {
+  margin-top: 5px;
   font-size: 2em;
   text-align: center;
+}
+
+.book-container {
+  display: flex; 
+  flex-direction: column; 
+  margin: 10px;
+  outline: 1px black solid;
+  padding: 5px;
+}
+
+.book-item {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+#book-content {
+  display: flex; 
+  flex-wrap: wrap;
 }
